@@ -7,15 +7,17 @@ import jakarta.servlet.http.HttpServletResponse
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.transactions.transactionManager
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import java.sql.Connection
 import java.util.*
 
 @RestController
 @RequestMapping("/auth")
-class AuthController(private val service: AuthService) {
+class AuthController() {
 //    @PostMapping(value = ["/signup"])
 //    fun signUp(@RequestBody req: SignupRequest): ResponseEntity<Long> {
 //        println(req)
@@ -98,7 +100,9 @@ class AuthController(private val service: AuthService) {
         println(username)
         println(password)
 
-        val (result, message) = service.authenticate(username, password)
+        val (result, message) = this.authenticate(username, password)
+        println("authenticate message")
+        println(message)
         if(result) {
             // 3. cookie와 헤더를 생성한후 리다이렉트
             val cookie = Cookie("token", message)
@@ -108,7 +112,7 @@ class AuthController(private val service: AuthService) {
 
             // 응답헤더에 쿠키 추가
             res.addCookie(cookie)
-
+            println("111111111111111")
             // 웹 첫페이지로 리다이렉트
             return ResponseEntity
                 .status(HttpStatus.FOUND)
@@ -125,9 +129,71 @@ class AuthController(private val service: AuthService) {
             .status(HttpStatus.FOUND)
             .location(
                 ServletUriComponentsBuilder
-                    .fromHttpUrl("http://localhost:5500/login.html?err=$message")
+                    .fromHttpUrl("http://localhost:5500/member/login.html?return-status=401")
                     .build().toUri()
             )
             .build<Any>()
+    }
+
+
+    fun authenticate(username: String, password: String) : Pair<Boolean, String> {
+
+        println("username:"+username)
+        println("password:"+password)
+
+        // readOnly를 하게되면 transaction id를 생성하지 않음
+        // MySQL 기본 격리수준, repeatable_read
+        // 다른 SQL DBMS는 기본 격리수준, read_commited
+
+        // read_committed (병렬처리지만, 커밋된 것만 조회되게 함)
+        // txn = 1, select all - 오래걸림
+        // txn = 2, insert - 빠르게됨
+        // txn(2)번의 insert 결과가 txn(1)번의 select 결과에 반영이됨.
+
+        // repeatable_read (병력처리지만, 요청한 순서대로 조회되게 함)
+        // txn = 1, select all - 오래걸림
+        // txn = 2, insert - 빠르게됨
+        // txn(2)번의 insert 결과가 txn(1)번의 select 결과에 반영이 안 됨.
+
+        val (result, payload) = transaction(
+                Connection.TRANSACTION_READ_UNCOMMITTED,
+                readOnly = true) {
+            val m = Members; // 테이블네임 별칭(alias) 단축해서 쓸 수 있음
+
+            // 인증정보 조회
+            val identityRecord = m.select { m.username eq username }.singleOrNull()
+                    ?: return@transaction Pair(false, mapOf("message" to "Unauthorized"))
+
+            println("identityRecord")
+            println(identityRecord)
+
+            return@transaction Pair(true, mapOf(
+                    "id" to identityRecord[m.id],
+                    "username" to identityRecord[m.username],
+                    "mname" to identityRecord[m.mname],
+                    "secret" to identityRecord[m.secret]
+            ))
+        }
+
+        println("result")
+        println(result)
+
+        if(!result) {
+            return Pair(false, payload["message"].toString());
+        }
+
+        //   password+salt -> 해시 -> secret 일치여부 확인
+        val isVerified = HashUtil.verifyHash(password, payload["secret"].toString())
+        if (!isVerified) {
+            return Pair(false, "Unauthorized")
+        }
+
+        val token = JwtUtil.createToken(
+                payload["id"].toString().toLong(),
+                payload["username"].toString(),
+                payload["nickname"].toString()
+        )
+
+        return Pair(true, token)
     }
 }

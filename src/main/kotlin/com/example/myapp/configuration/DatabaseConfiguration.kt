@@ -6,16 +6,17 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import javax.sql.DataSource
 
+// auto-configuration: datasource 객체 생성
+// spring boot configuration: database-configuration 객체 생성
+
 @Configuration
-class DatabaseConfiguration(val dataSource: DataSource) {
-    
+class DatabaseConfiguration (val dataSource: DataSource) {
     @Bean
     fun databaseConfig() : DatabaseConfig {
-        return DatabaseConfig {useNestedTransactions = true}
+        return DatabaseConfig { useNestedTransactions = true }
     }
-    
     @Bean
-    fun database() : Database {
+    fun database(): Database {
         return Database.connect(dataSource)
     }
 }

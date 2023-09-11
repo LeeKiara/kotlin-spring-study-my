@@ -42,12 +42,12 @@ object JwtUtil {
             // 토큰 검증 제대로 된 상황
             // 토큰 페이로드(데이터, subject/claim)를 조회
             val id: Long = java.lang.Long.valueOf(decodedJWT.getSubject())
-            val nickname: String = decodedJWT
-                .getClaim("nickname").asString()
+            val mname: String = decodedJWT
+                .getClaim("mname").asString()
             val username: String = decodedJWT
                 .getClaim("username").asString()
 
-            AuthProfile(id, nickname, username)
+            AuthProfile(id, mname, username)
         } catch (e: JWTVerificationException) {
             // 토큰 검증 오류 상황
             null
