@@ -1,0 +1,31 @@
+package com.example.myapp.post
+
+// query-model, view-model
+// domain-model
+data class PostResponse(
+    val id : Long,
+    val title : String,
+    val content: String,
+    val createdDate: String
+)
+
+// 기존의 java, String 이 nullalble
+// {"title":"", "content":""}
+// {"title":""} -> content 가 null
+
+// 필드가 not-nullable
+data class PostCreateRequest(val title : String, val content: String)
+
+fun PostCreateRequest.validate() =
+    !(this.title.isEmpty() || this.content.isEmpty())
+
+data class PostModifyRequest(val title : String?, val content: String?)
+
+data class PostCommentCountResponse(
+    val id : Long,
+    val title : String,
+    val createdDate: String,
+    val profileId : Long,
+    val nickname: String,
+    val commentCount : Long
+)

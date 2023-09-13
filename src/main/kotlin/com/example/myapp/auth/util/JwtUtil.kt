@@ -15,7 +15,7 @@ object JwtUtil {
     // ms 단위
     val TOKEN_TIMEOUT = (1000 * 60 * 60 * 24 * 7).toLong()
     // JWT 토큰 생성
-    fun createToken(id: Long, username: String, nickname: String): String {
+    fun createToken(id: Long, username: String, mname: String): String {
         // 토큰 생성시간과 만료시간을 만듦
         val now = Date()
         // 만료시간: 2차인증 이런게 잘걸려있으면 큰문제는 안됨. 내컴퓨터를 다른 사람이 쓴다.
@@ -27,7 +27,7 @@ object JwtUtil {
         return JWT.create() // sub: 토큰 소유자
             .withSubject(id.toString())
             .withClaim("username", username)
-            .withClaim("nickname", nickname)
+            .withClaim("mname", mname)
             .withIssuedAt(now)
             .withExpiresAt(exp)
             .sign(algorithm)

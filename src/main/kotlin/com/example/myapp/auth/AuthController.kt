@@ -191,7 +191,7 @@ class AuthController() {
         val token = JwtUtil.createToken(
                 payload["id"].toString().toLong(),
                 payload["username"].toString(),
-                payload["nickname"].toString()
+                payload["mname"].toString()
         )
 
         return Pair(true, token)
