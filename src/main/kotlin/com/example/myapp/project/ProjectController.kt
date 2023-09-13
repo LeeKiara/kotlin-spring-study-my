@@ -3,6 +3,8 @@ package com.example.myapp.project;
 import com.example.myapp.auth.Auth
 import com.example.myapp.auth.AuthProfile
 import com.example.myapp.auth.Members
+import com.example.myapp.team.ProjectTeamMemberRequest
+import com.example.myapp.team.ProjectTeamMembers
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -151,7 +153,7 @@ class ProjectController {
                 it[description] = request.description
                 it[startDate] = LocalDate.parse(request.startDate, formatter)   // String을 LocalDateTime으로 변환
                 it[endDate] = LocalDate.parse(request.endDate, formatter)
-                it[image] = request.image
+                it[image] = request.image.toString()
                 it[status] = "1"
                 it[creatorUser] = authProfile.id
                 it[createdTime] = LocalDateTime.now()
@@ -323,38 +325,6 @@ class ProjectController {
             return@transaction contents
     }
 
-    // 내가 참여한 프로젝트 조회
-    // GET /project/join
-//    @Operation(summary = "내가 참여한 프로젝트 조회", security = [SecurityRequirement(name = "bearer-key")])
-//    @Auth
-//    @GetMapping(value = ["/join"])
-//    fun getJoinProject(@RequestAttribute authProfile: AuthProfile): List<ProjectResponse> =
-//        transaction(Connection.TRANSACTION_READ_UNCOMMITTED, readOnly = true) {
-//
-//            // object의 이름을 짧은걸로 변경
-//            val p = Projects
-//
-//            // 조회
-//            val contents = Projects
-//                .select { p.status eq status }
-//                .orderBy(p.pid to SortOrder.DESC)
-//                .map {
-//                        r -> ProjectResponse(
-//                    r[p.pid],
-//                    r[p.title],
-//                    r[p.description],
-//                    r[p.startDate].toString(),
-//                    r[p.endDate].toString(),
-//                    r[p.image],
-//                    r[p.status],
-//                    r[p.creatorUser],
-//                    r[p.createdTime].toString()
-//                )
-//                }
-//
-//            return@transaction contents
-//        }
-
     @Auth
     @PutMapping("/{pid}")
     fun modify(@PathVariable pid : Long,
@@ -408,4 +378,50 @@ class ProjectController {
         return ResponseEntity.ok().build();
     }
 
+    // 내가 참여한 프로젝트 조회
+    // 결과값: List<PostResponse>
+    //      exposed selectAll -> List<ResultRow>
+    //       ResultRow는 transaction {} 구문 밖에서 접근 불가능함
+    //       transaction 구분 외부로 보낼 때는 별도의 객체로 변환해서 내보낸다.
+    // GET /project/join
+    @Operation(summary = "내가 참여한 프로젝트 조회", security = [SecurityRequirement(name = "bearer-key")])
+    @Auth
+    @GetMapping(value = ["/join"])
+    fun getJoinProject(@RequestBody request: ProjectTeamMemberRequest,
+                       @RequestAttribute authProfile: AuthProfile)
+            =  transaction(Connection.TRANSACTION_READ_UNCOMMITTED, readOnly = true) {
+
+        println("<<< ProjectController.getProject >>>")
+        println("입력 값 확인")
+        println("pid : ${request.pid}, mid:${request.mid} ")
+
+        // object의 이름을 짧은걸로 변경
+        val p = Projects
+        val ptm = ProjectTeamMembers
+
+        // SQL :: where 조건 = pid가 동일한 프로젝트 정보
+//        SELECT p.pid, title, description, start_date, end_date, image, status, creator_user, p.created_time,
+//        ptm.mid
+//        FROM project p inner join project_team_member ptm on p.pid = ptm.pid
+//        where ptm.mid = 1;
+        val result = Projects
+            .join(ProjectTeamMembers, JoinType.INNER, onColumn = Projects.pid, otherColumn = ProjectTeamMembers.pid)
+            .slice(p.pid, p.title, p.description, p.startDate, p.endDate, p.image, p.status, p.creatorUser, p.createdTime,
+                ptm.mid)
+            .select { ptm.mid eq request.mid }
+            .map {
+                    r -> ProjectResponse(
+                r[p.pid],
+                r[p.title],
+                r[p.description],
+                r[p.startDate].toString(),
+                r[p.endDate].toString(),
+                r[p.image],
+                r[p.status],
+                r[p.creatorUser],
+                r[p.createdTime].toString(),
+                r[ptm.mid].toString()
+            )
+            }
+    }
 }

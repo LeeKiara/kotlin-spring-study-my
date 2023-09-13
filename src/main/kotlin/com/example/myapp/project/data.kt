@@ -12,7 +12,7 @@ data class ProjectCreateRequest (
 fun ProjectCreateRequest.validate() =
     this.title.isNotEmpty()
 
-data class ProjectResponse (
+data class ProjectResponse(
     val pid: Long,
     val title: String,
     val description: String?,
@@ -22,7 +22,8 @@ data class ProjectResponse (
     val status: String,
     val creatorUser: Long,
     var createdTime: String,
-    var mname: String?
+    var mname: String?,
+    var mid: Long
 ) {
     // 생성자 1: 모든 필수 속성을 인수로 받음
     constructor(
@@ -45,9 +46,35 @@ data class ProjectResponse (
         status,
         creatorUser,
         createdTime,
-        null
+        null,
+        0
     )
 
+    // 생성자 2:
+    constructor(
+        pid: Long,
+        title: String,
+        description: String?,
+        startDate: String,
+        endDate: String,
+        image: String?,
+        status: String,
+        creatorUser: Long,
+        createdTime: String,
+        mname: String?
+    ) : this(
+        pid,
+        title,
+        description,
+        startDate,
+        endDate,
+        image,
+        status,
+        creatorUser,
+        createdTime,
+        mname,
+        0
+    )
 }
 
 data class ProjectModifyRequest (

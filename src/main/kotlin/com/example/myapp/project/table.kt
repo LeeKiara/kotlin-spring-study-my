@@ -18,8 +18,8 @@ object Projects : Table("project") {
     val description = varchar("description", 1000).nullable()
     val startDate   = date("start_date")
     val endDate     = date("end_date")
-//    val image       = blob("image").nullable() // ExposedBlob을 사용하여 BLOB 컬럼으로 정의
-    val image       = text("image" ).nullable() // ExposedBlob을 사용하여 BLOB 컬럼으로 정의
+//    val image       = text("image" ).nullable() // ExposedBlob을 사용하여 BLOB 컬럼으로 정의
+    val image = registerColumn<String>("image_long_text", LongTextColumnType())
     val status      = varchar("status", 1)
     val creatorUser = long("creator_user")
     val createdTime = datetime("created_time")
@@ -28,6 +28,10 @@ object Projects : Table("project") {
     override val primaryKey = PrimaryKey(pid, name = "pk_project_id")
 }
 
+class LongTextColumnType : IColumnType {
+    override var nullable: Boolean = true
+    override fun sqlType(): String = "LONGTEXT"
+}
 // 테이블 생성 코드
 @Configuration
 class ProjectTableSetup(private val database: Database) {

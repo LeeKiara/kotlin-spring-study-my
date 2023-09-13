@@ -2,12 +2,17 @@ package com.example.myapp.team
 
 import com.example.myapp.auth.Auth
 import com.example.myapp.auth.AuthProfile
+import com.example.myapp.project.ProjectResponse
+import com.example.myapp.project.Projects
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.web.bind.annotation.*
+import java.sql.Connection
 import java.util.*
 
 
@@ -38,4 +43,6 @@ class ProjectTeamController {
                     it[ptm.createdTime].toString()
                 ) }
     }
+
+
 }
