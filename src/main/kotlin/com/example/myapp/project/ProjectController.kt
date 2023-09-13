@@ -424,4 +424,18 @@ class ProjectController {
             )
             }
     }
+
+    @PostMapping("/task/remove")
+    fun multiDataTest(@RequestBody request: List<Long> ) {
+
+        println("request")
+        println(request)
+    }
+
+    @PostMapping("/test")
+    fun multiDataTest2(@RequestBody request: List<AuthProfile> ) {
+
+        println("request")
+        println(request)
+    }
 }
