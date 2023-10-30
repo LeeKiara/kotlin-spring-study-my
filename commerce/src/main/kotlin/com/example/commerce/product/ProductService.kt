@@ -16,7 +16,8 @@ class ProductService(private val productClient: ProductClient,
     // 애플리케이션을 시작하면 한 번은 수행됨
 //    @Scheduled(fixedRate = 1000 * 60)
 //    @Scheduled(fixedRate = 1000 * 60 * 60)
-//    @Scheduled(cron = "10 * * * * * *")
+//    @Scheduled(cron = "* 5 * * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     fun scheduledFetchTopPromotion() {
         println("--called by schedule: ${Date().time}--")
         val result = productClient.getTopPromotion()
