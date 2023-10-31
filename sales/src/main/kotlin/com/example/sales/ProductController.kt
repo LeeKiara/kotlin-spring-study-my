@@ -10,6 +10,8 @@ data class TopProductResponse(
     val image: String
 )
 
+
+
 @RestController
 @RequestMapping("/products")
 class ProductController {
@@ -20,9 +22,12 @@ class ProductController {
         TopProductResponse(3, "제품3", "http://.../3.png"),
                 TopProductResponse(4, "제품4", "http://.../4.png")
     )
+    
 
     @GetMapping("/top-promotion")
     fun getTopPromotion() : List<TopProductResponse> {
         return topProducts;
     }
+
+
 }
