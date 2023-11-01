@@ -1,4 +1,4 @@
-package com.bookshop.admin.order
+package com.bookshop.admin.publisher
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -7,23 +7,9 @@ import org.springframework.stereotype.Service
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.io.IOException
 
-data class OrderSales(
-    var id: Long,
-    val name: String,
-    val address: String,
-    val orderSalesItems: List<OrderSalesItem>
-)
-
-data class OrderSalesItem(
-    var id: Long,
-    val productId: Long,
-    val productName: String,
-    val quantity: Int,
-    val unitPrice: Long
-)
 
 @Service
-class RabbitConsumer {
+class RabbitPublisherConsumer {
     //    @RabbitListener(queues = ["my-queue"])
 //    fun receive(message : String) {
 //        // auto-ack 모드
@@ -40,11 +26,11 @@ class RabbitConsumer {
 
     private val emitters = mutableListOf<SseEmitter>()
 
-    //    @RabbitListener(queues = ["create-order"])
-    @RabbitListener(queues = ["create-order"], containerFactory = "rabbitListenerContainerFactory1")
-    fun receiveOrder(message: String) {
-        val order: OrderSales = mapper.readValue(message)
-        println("[*** create-order ***] Received Order: $order")
+    //    @RabbitListener(queues = ["create-book"])
+    @RabbitListener(queues = ["create-book"], containerFactory = "rabbitListenerContainerFactory2")
+    fun receiveBooks(message: String) {
+        val books: BookMessageRequest = mapper.readValue(message)
+        println("[*** create-book 받기 ***] Received Books : $books")
 
         val deadEmitters: MutableList<SseEmitter> = ArrayList()
 

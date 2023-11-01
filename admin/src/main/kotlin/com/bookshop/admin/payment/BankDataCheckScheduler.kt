@@ -26,10 +26,10 @@ class BankDataCheckScheduler(
 
 
     // 결제방법이 온라인입금인 주문정보 조회 후 redis 에 저장
-    // 처리 간격 : 5분
-    @Scheduled(cron = "0 */5 * * * *")
+    // 처리 간격 : 30분
+    @Scheduled(cron = "0 */30 * * * *")
     fun scheduledSaveBankDeposit() {
-        println("======= 온라인입금으로 주문한 정보 redis 캐시에 정장(5분 간격)  ${Date().time} =======")
+        println("======= 온라인입금으로 주문한 정보 redis 캐시에 정장(30분 간격)  ${Date().time} =======")
 
         try {
             // 결제방법이 온라인입금인 주문정보 조회
@@ -53,10 +53,10 @@ class BankDataCheckScheduler(
     }
 
     // redis cache 정보를 조회 후 주문상태를 완료 처리함
-    // 처리 간격 : 10분
-    @Scheduled(cron = "0 */10 * * * *")
+    // 처리 간격 : 1시간
+    @Scheduled(cron = "0 * */60 * * *")
     fun scheduledFetchBankDeposit() {
-        println("======= redis cache 정보를 조회 후 주문상태를 완료 처리함(10분 간격) ${Date().time} =======")
+        println("======= redis cache 정보를 조회 후 주문상태를 완료 처리함(1시간 간격) ${Date().time} =======")
 
         try {
 
