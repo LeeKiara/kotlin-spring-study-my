@@ -1,6 +1,5 @@
-package com.bookshop.admin
+package com.bookshop.admin.order
 
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -22,6 +21,8 @@ class OrderPaymentController {
 
     @RequestMapping("/bank-deposit")
     fun getPaymentDeposit() : List<BankDepositResponse> {
+        println("<<<<< OrderPaymentController getPaymentDeposit >>>>>>>>>")
+
         return bankDeposit;
     }
 }

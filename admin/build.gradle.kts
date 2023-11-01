@@ -7,7 +7,7 @@ plugins {
 	kotlin("plugin.spring") version "1.8.22"
 }
 
-group = "com.example"
+group = "com.bookshop"
 version = "0.0.1-SNAPSHOT"
 
 java {
@@ -20,7 +20,10 @@ repositories {
 
 extra["springCloudVersion"] = "2022.0.4"
 
+val exposedVersion: String by project
 dependencies {
+
+	//commerce 의존성
 	implementation("org.springframework.boot:spring-boot-starter-amqp")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -29,6 +32,29 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.amqp:spring-rabbit-test")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	runtimeOnly("com.mysql:mysql-connector-j")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+	//추가
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+	implementation("com.auth0:java-jwt:4.4.0")
+	implementation("at.favre.lib:bcrypt:0.10.2")
+
+	//expose 의존성
+	implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+	implementation("org.jetbrains.exposed:exposed-crypt:$exposedVersion")
+	implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+	implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+
+	implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
+
+	implementation("org.jetbrains.exposed:exposed-json:$exposedVersion")
+	implementation("org.jetbrains.exposed:exposed-money:$exposedVersion")
+	implementation("org.jetbrains.exposed:exposed-spring-boot-starter:$exposedVersion")
+
 }
 
 dependencyManagement {

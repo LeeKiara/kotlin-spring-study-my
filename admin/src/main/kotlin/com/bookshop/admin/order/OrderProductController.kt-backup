@@ -1,6 +1,5 @@
-package com.bookshop.admin
+package com.bookshop.admin.order
 
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -30,6 +29,7 @@ class OrderProductController {
 
     @RequestMapping("/products")
     fun getOrdersProducts() : List<OrderResponse> {
+        println("<<<<< OrderProductController getOrdersProducts >>>>>>>>>")
         return orderProducts;
     }
 

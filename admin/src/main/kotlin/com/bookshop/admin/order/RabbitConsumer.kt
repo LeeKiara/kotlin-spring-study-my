@@ -1,4 +1,4 @@
-package com.bookshop.admin
+package com.bookshop.admin.order
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -7,9 +7,31 @@ import org.springframework.stereotype.Service
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.io.IOException
 
+data class OrderSales(
+    var id: Long,
+    val name: String,
+    val address: String,
+    val orderSalesItems: List<OrderSalesItem>
+)
+
+data class OrderSalesItem(
+    var id: Long,
+    val productId: Long,
+    val productName: String,
+    val quantity: Int,
+    val unitPrice: Long
+)
+
 @Service
-class OrderService {
-    private val mapper = jacksonObjectMapper()
+class RabbitConsumer {
+//    @RabbitListener(queues = ["my-queue"])
+//    fun receive(message : String) {
+//        // auto-ack 모드
+//        // listner 함수가 정상적으로 수행되면
+//        // rabbitmq에 ack 신호를 보냄, 메시지가 삭제
+//        println("[my-queue] Received Message: $message")
+//    }
+private val mapper = jacksonObjectMapper()
     // emit: 발생시키다
     // emitter: 발생시키는객체
     // SseEmitter: 서버에서 보낸 이벤트를 발생시키는 객체
@@ -20,8 +42,8 @@ class OrderService {
 
     @RabbitListener(queues = ["create-order"])
     fun receiveOrder(message: String) {
-        val order : Order = mapper.readValue(message)
-        println("Received Order: $order")
+        val order : OrderSales = mapper.readValue(message)
+        println("[*** create-order ***] Received Order: $order")
 
         val deadEmitters: MutableList<SseEmitter> = ArrayList()
 
@@ -52,8 +74,9 @@ class OrderService {
         }
         // 기본 메시지 전송
         // 기본 메시지를 전송 안하면 pending처리 됨
-        emitter.send("connected");
+        emitter.send("[create-order] connected");
 
         return emitter
     }
 }
+
