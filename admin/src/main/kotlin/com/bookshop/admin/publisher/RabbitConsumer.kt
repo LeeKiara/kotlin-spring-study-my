@@ -27,7 +27,7 @@ class RabbitPublisherConsumer {
     private val emitters = mutableListOf<SseEmitter>()
 
     //    @RabbitListener(queues = ["create-book"])
-    @RabbitListener(queues = ["create-book"], containerFactory = "rabbitListenerContainerFactory2")
+    @RabbitListener(queues = ["event-book"], containerFactory = "rabbitListenerContainerFactory2")
     fun receiveBooks(message: String) {
         val books: BookMessageRequest = mapper.readValue(message)
         println("[*** create-book 받기 ***] Received Books : $books")
