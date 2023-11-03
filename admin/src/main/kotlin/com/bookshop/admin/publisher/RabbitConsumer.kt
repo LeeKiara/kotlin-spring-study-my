@@ -1,11 +1,8 @@
 package com.bookshop.admin.publisher
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
-import java.io.IOException
 
 
 @Service
@@ -27,24 +24,31 @@ class RabbitPublisherConsumer {
     private val emitters = mutableListOf<SseEmitter>()
 
     //    @RabbitListener(queues = ["create-book"])
-    @RabbitListener(queues = ["event-book"], containerFactory = "rabbitListenerContainerFactory2")
-    fun receiveBooks(message: String) {
-        val books: BookMessageRequest = mapper.readValue(message)
-        println("[*** create-book 받기 ***] Received Books : $books")
-
-        val deadEmitters: MutableList<SseEmitter> = ArrayList()
-
-        // 전체 emitter 목록을 탐색해서 전체 전송
-        for (emitter in emitters) {
-            try {
-                emitter.send(message)
-            } catch (e: IOException) {
-                deadEmitters.add(emitter)
-            }
-        }
-        // send 불가능한 객체들 삭제
-        emitters.removeAll(deadEmitters)
-    }
+//    @RabbitListener(queues = ["event-book"], containerFactory = "rabbitListenerContainerFactory2")
+//    fun receiveBooks(message: String) {
+//
+//        try {
+//            val books: BookMessageRequest = mapper.readValue(message)
+//            println("[*** create-book 받기 ***] Received Books : $books")
+//
+//            val deadEmitters: MutableList<SseEmitter> = ArrayList()
+//
+//            // 전체 emitter 목록을 탐색해서 전체 전송
+//            for (emitter in emitters) {
+//                try {
+//                    emitter.send(message)
+//                } catch (e: IOException) {
+//                    deadEmitters.add(emitter)
+//                }
+//            }
+//            // send 불가능한 객체들 삭제
+//            emitters.removeAll(deadEmitters)
+//        } catch (e: Exception) {
+//
+//            println("************ 에러 발생 ***********")
+//            return;
+//        }
+//    }
 
     fun createEmitter(): SseEmitter {
         // 클라이언트에서 응답받을 수 있는 객체를 생성하고 리스트 추가

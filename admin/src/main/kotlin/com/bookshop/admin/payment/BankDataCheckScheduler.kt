@@ -12,9 +12,9 @@ import java.util.*
 @EnableScheduling
 @Component
 class BankDataCheckScheduler(
-    private val paymentController: PaymentController,
-    private val paymentService: PaymentService,
-    private val redisTemplate: RedisTemplate<String, String>
+        private val paymentController: PaymentController,
+        private val paymentService: PaymentService,
+        private val redisTemplate: RedisTemplate<String, String>
 ) {
 
     //에러 로그 확인을 위해
@@ -43,7 +43,7 @@ class BankDataCheckScheduler(
 
             // 캐시 데이터 생성
             redisTemplate.opsForValue()
-                .set(REDIS_KEY, mapper.writeValueAsString(result))
+                    .set(REDIS_KEY, mapper.writeValueAsString(result))
 
         } catch (e: Exception) {
             //에러메세지 확인
@@ -54,7 +54,7 @@ class BankDataCheckScheduler(
 
     // redis cache 정보를 조회 후 주문상태를 완료 처리함
     // 처리 간격 : 1시간
-    @Scheduled(cron = "0 * */60 * * *")
+    @Scheduled(cron = "0 0 */1 * * *")
     fun scheduledFetchBankDeposit() {
         println("======= redis cache 정보를 조회 후 주문상태를 완료 처리함(1시간 간격) ${Date().time} =======")
 
