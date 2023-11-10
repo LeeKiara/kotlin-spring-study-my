@@ -83,3 +83,18 @@ data class OrderSalesRequest(
     val itemId: Int,        // book id
     val quantity: Int,  // 수량
 )
+
+data class OrderSales(
+    var id: Long,
+    val name: String,
+    val address: String,
+    val orderSalesItems: List<OrderSalesItem>
+)
+
+data class OrderSalesItem(
+    var id: Long,
+    val productId: Int,
+    val productName: String,
+    val quantity: Int,
+    val unitPrice: Long
+)
