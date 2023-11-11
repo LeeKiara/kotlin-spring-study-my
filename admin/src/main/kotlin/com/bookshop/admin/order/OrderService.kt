@@ -25,7 +25,7 @@ class OrderService(private val database: Database) {
         transaction {
             try {
                 for (reqItem in orderItemStock) {
-                    println("도서 ID: ${reqItem.productId}, 수량: ${reqItem.quantity}")
+                    println("** 주문 판매수량 업데이트 도서 ID: ${reqItem.productId}, 수량: ${reqItem.quantity}")
 
                     // select id from order_stock where item_id = 1;
                     val query = OrderSalesTable.select {

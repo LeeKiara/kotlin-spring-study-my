@@ -1,10 +1,10 @@
 -- 1087, 327766544
-select count(*) from books; 
+select * from books; 
 select max(item_id) from books; 
 select max(id) from books; 
 
-select item_id, cover, books.* from books where id = 6182; 
-select item_id, isbn, book.* from book where item_id = 317410509;
+select item_id, cover, books.* from books where item_id = 327655063;
+
 
 select * from books; 
 select * from books order by books.id DESC; 

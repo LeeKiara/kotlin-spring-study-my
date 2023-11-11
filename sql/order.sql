@@ -3,7 +3,7 @@ select * from order_item;
 select * from order_address;
 select * from order_sales;
 
--- delete from order_address;
+-- delete from order_address; 
 -- delete from order_item;
 -- delete from orders;
 
@@ -29,8 +29,7 @@ UPDATE orders
 SET order_date = DATE_SUB(NOW(), INTERVAL 120 DAY)
 WHERE id = 2023123456789;
 
-UPDATE orders
-SET order_status = "1";
+UPDATE orders SET order_status = "1";
 
 select order_item.item_id, quantity, order_price , books.title
 from order_item join books on order_item.item_id = books.item_id;
@@ -102,3 +101,7 @@ SELECT orders.id, orders.payment_method, orders.payment_price, orders.order_stat
 WHERE (orders.profile_id = 2) 
 AND (DATE(orders.order_date) >= '2023-07-31') AND (DATE(orders.order_date) <= '2023-10-31') 
 ORDER BY orders.id DESC LIMIT 5;
+
+SELECT orders.id, orders.payment_method, orders.payment_price, orders.order_status, orders.order_date, order_address.delivery_name, order_address.delivery_phone, order_address.postcode, order_address.address, order_address.detail_address, order_address.delivery_memo, orders.cancel_memo 
+FROM orders 
+INNER JOIN order_address ON orders.id = order_address.order_id WHERE (orders.profile_id = 1) AND (orders.id = 13);
