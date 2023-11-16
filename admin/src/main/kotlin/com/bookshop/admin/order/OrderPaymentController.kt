@@ -19,7 +19,7 @@ class OrderPaymentController {
         BankDepositResponse(30000, "Y"),
     )
 
-    @RequestMapping("/bank-deposit")
+    @RequestMapping("/bank-deposit-backup")
     fun getPaymentDeposit() : List<BankDepositResponse> {
         println("<<<<< OrderPaymentController getPaymentDeposit >>>>>>>>>")
 

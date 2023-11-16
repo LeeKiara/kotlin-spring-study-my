@@ -24,8 +24,34 @@ class PaymentController(private val paymentService: PaymentService) {
 
     // Bank로 부터 입금여부 받은 후 온라인 입금으로 주문 완료 처리 
     // Bank의 입금여부 값은 redis에 저장
-    @PostMapping("/bank-deposit")
-    fun getCachedBankDeposit(): ResponseEntity<Any> {
+    @GetMapping("/bank-deposit")
+    fun getCachedBankDeposit(): List<BankDepositResponse> {
+
+        println("<<<<< PaymentController getCachedBankDeposit >>>>>>>>>")
+
+        val REDIS_KEY = "bank-deposit-admin"
+
+        // Object <-> JSON
+        val mapper = jacksonObjectMapper()
+
+        val result = redisTemplate.opsForValue().get(REDIS_KEY)
+        val bankDepositList: List<BankDepositResponse>
+
+        if (result != null) {
+            // value(json) -> List<BankDepositResponse>
+            bankDepositList = mapper.readValue(result)
+        } else {
+            // 빈 리스트 초기화
+            bankDepositList = emptyList()
+        }
+
+//        paymentService.updateOrdersStatus(bankDepositList)
+
+        return bankDepositList
+    }
+
+    @PostMapping("/bank-deposit-backup")
+    fun getCachedBankDeposit_backup(): ResponseEntity<Any> {
         val REDIS_KEY = "bank-deposit"
 
         // Object <-> JSON
@@ -64,7 +90,7 @@ class PaymentController(private val paymentService: PaymentService) {
                 .map { row ->
                     BankDepositResponse(
                         orderId = row[Orders.id],
-                        deposit = "N",
+                        deposit = "Y",
                     )
                 }
         }

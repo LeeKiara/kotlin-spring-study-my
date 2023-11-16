@@ -47,8 +47,8 @@ class RabbitMQConfig {
     @Primary
     fun connectionFactory1(): ConnectionFactory {
         val connectionFactory = CachingConnectionFactory()
-        connectionFactory.setHost("192.168.100.204")
-//        connectionFactory.setHost("192.168.0.5")
+//        connectionFactory.setHost("192.168.100.204")
+        connectionFactory.setHost("192.168.0.5")
         connectionFactory.setPort(5672)
         connectionFactory.setUsername("rabbit")
         connectionFactory.setPassword("password1234!")

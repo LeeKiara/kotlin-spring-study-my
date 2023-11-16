@@ -19,17 +19,17 @@ class BankDataCheckScheduler(
 
     //에러 로그 확인을 위해
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
-    private val REDIS_KEY = "bank-deposit"
+    private val REDIS_KEY = "bank-deposit-admin"
 
     // Object <-> JSON
     private val mapper = jacksonObjectMapper()
 
 
     // 결제방법이 온라인입금인 주문정보 조회 후 redis 에 저장
-    // 처리 간격 : 30분
-    @Scheduled(cron = "0 */30 * * * *")
+    // 처리 간격 : 5분
+    @Scheduled(cron = "0 */5 * * * *")
     fun scheduledSaveBankDeposit() {
-        println("======= 온라인입금으로 주문한 정보 redis 캐시에 정장(30분 간격)  ${Date().time} =======")
+        println("======= 온라인입금으로 주문한 정보 redis 캐시에 저장(30분 간격)  ${Date().time} =======")
 
         try {
             // 결제방법이 온라인입금인 주문정보 조회
@@ -54,7 +54,7 @@ class BankDataCheckScheduler(
 
     // redis cache 정보를 조회 후 주문상태를 완료 처리함
     // 처리 간격 : 1시간
-    @Scheduled(cron = "0 0 */1 * * *")
+//    @Scheduled(cron = "0 0 */1 * * *")
     fun scheduledFetchBankDeposit() {
         println("======= redis cache 정보를 조회 후 주문상태를 완료 처리함(1시간 간격) ${Date().time} =======")
 
