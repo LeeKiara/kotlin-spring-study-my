@@ -8,12 +8,33 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.PutMapping
 
 @Service
 class OrderService(private val database: Database) {
 
     //에러 로그 확인을 위해
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
+
+    // 배송 처리
+    fun modifyOrderBatchStatus(orderId: Long) {
+
+        println("<<< OrderService 배송 완료 처리 >>>")
+
+        val o = Orders;
+
+        // id에 해당 레코드가 없으면 return
+        transaction {
+            o.select { (o.id eq orderId) }.firstOrNull()
+        } ?: return;
+
+        // 배송 처리 : batch-status("1")로 업데이트 처리 => 배송 중
+        transaction {
+            o.update({ o.id eq orderId }) {
+                it[batchStatus] = "1";
+            }
+        }
+    }
 
     // 주문 판매수량 업데이트
 //    fun updateOrderSales(orderItemStock: List<OrderSalesRequest>) {

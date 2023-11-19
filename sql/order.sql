@@ -1,8 +1,20 @@
-select * from orders;
+-- ALTER TABLE Orders AUTO_INCREMENT = 2023123456789;
+
+select * from orders order by id desc;
 select * from order_item;
 select * from order_address;
 select * from order_sales;
 
+select * from orders where order_status = '0';
+
+update orders set order_status = '0' where id = 2023123456799;
+update orders set batch_status = null where id = 2023123456799;
+
+select orders.id, order_item.item_id, order_item.quantity, order_item.order_price from orders
+inner join order_item where orders.id = order_item.order_id
+and orders.batch_status != "1";
+
+select * from orders where batch_status is null;
 -- delete from order_address; 
 -- delete from order_item;
 -- delete from orders;
@@ -105,3 +117,6 @@ ORDER BY orders.id DESC LIMIT 5;
 SELECT orders.id, orders.payment_method, orders.payment_price, orders.order_status, orders.order_date, order_address.delivery_name, order_address.delivery_phone, order_address.postcode, order_address.address, order_address.detail_address, order_address.delivery_memo, orders.cancel_memo 
 FROM orders 
 INNER JOIN order_address ON orders.id = order_address.order_id WHERE (orders.profile_id = 1) AND (orders.id = 13);
+
+SELECT books.id, books.publisher, books.title, books.link, books.author, books.pub_date, books.description, books.isbn, books.isbn13, books.item_id, books.price_sales, books.price_standard, books.stock_status, books.cover, books.category_id, books.category_name, books.customer_review_rank,
+ order_sales.id, order_sales.book_sales, order_sales.item_id, order_sales.status, order_sales.book_id FROM books INNER JOIN order_sales ON order_sales.item_id = books.item_id GROUP BY books.item_id, order_sales.item_id, books.id, order_sales.id ORDER BY order_sales.book_sales DESC;

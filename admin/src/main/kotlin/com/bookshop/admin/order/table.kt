@@ -27,6 +27,9 @@ object Orders : Table("orders") {
     // 주문상태 (1: 완료, 2:취소)
     val orderStatus = varchar("order_status", 1)
 
+    // 배송 처리 상태 (0:배송전, 1: 배송중, 2: 배송완료)
+    val batchStatus = varchar("batch_status", 1).nullable();
+    
 //    val profileId = reference("profile_id", Profiles)
 
     // 주문 key

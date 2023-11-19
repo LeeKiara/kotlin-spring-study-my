@@ -31,10 +31,15 @@ class RabbitConsumer(private val orderService: OrderService) {
 
         try {
 
-            println("주문정보 RabbitMQ로 수신 후 주문 판매수량 업데이트 start...")
+            println("\n┌─────────────────────────────────────────────────────────────┐");
+            println("│         주문정보 수신완료 (RabbitMQ) => 배송 처리 Start           │");
+            println("├─────────────────────────────────────────────────────────────┤");
 
             val order: OrderSales = mapper.readValue(message)
-            println("[*** create-order ***] Received Order: $order")
+            println("[*** Admin Server create-order ***] Received Order: $order")
+
+            // 배송 처리
+            orderService.modifyOrderBatchStatus(order.id );
 
             // 주문 판매수량 업데이트
             orderService.updateOrderSales(order.orderSalesItems);
@@ -45,7 +50,9 @@ class RabbitConsumer(private val orderService: OrderService) {
             for (emitter in emitters) {
                 try {
                     println("emitters message:" + message)
-                    emitter.send(message)
+
+                    // SSE 이벤트 스트림에 주문번호를 전달한다.
+                    emitter.send(order.id)
                 } catch (e: IOException) {
                     deadEmitters.add(emitter)
                 }
@@ -59,24 +66,26 @@ class RabbitConsumer(private val orderService: OrderService) {
         }
     }
 
-//    fun createEmitter(): SseEmitter {
-//        // 클라이언트에서 응답받을 수 있는 객체를 생성하고 리스트 추가
-//        val emitter = SseEmitter()
-//        emitters.add(emitter)
-//
-//        // 클라이언트의 접속에 제한시간 지나면
-//        emitter.onTimeout {
-//            emitters.remove(emitter)
-//        }
-//        // 접속이 끊기거나 만료됐을 때
-//        emitter.onCompletion {
-//            emitters.remove(emitter)
-//        }
-//        // 기본 메시지 전송
-//        // 기본 메시지를 전송 안하면 pending처리 됨
-//        emitter.send("[create-order] connected");
-//
-//        return emitter
-//    }
+    fun createEmitter(): SseEmitter {
+        // 클라이언트에서 응답받을 수 있는 객체를 생성하고 리스트 추가
+        val emitter = SseEmitter()
+        emitters.add(emitter)
+
+        // 클라이언트의 접속에 제한시간 지나면
+        emitter.onTimeout {
+            emitters.remove(emitter)
+        }
+        // 접속이 끊기거나 만료됐을 때
+        emitter.onCompletion {
+            emitters.remove(emitter)
+        }
+
+        println(">>> emitter.send([create-order]connected\")")
+        // 기본 메시지 전송
+        // 기본 메시지를 전송 안하면 pending처리 됨
+        emitter.send("[create-order]connected");
+
+        return emitter
+    }
 }
 

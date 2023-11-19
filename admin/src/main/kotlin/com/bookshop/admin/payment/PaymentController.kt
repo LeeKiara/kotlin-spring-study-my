@@ -22,14 +22,13 @@ class PaymentController(private val paymentService: PaymentService) {
     @Autowired
     private lateinit var redisTemplate: RedisTemplate<String, String>
 
-    // Bank로 부터 입금여부 받은 후 온라인 입금으로 주문 완료 처리 
-    // Bank의 입금여부 값은 redis에 저장
+    // Bank 온라인 입금 정보를 리턴한다.
     @GetMapping("/bank-deposit")
     fun getCachedBankDeposit(): List<BankDepositResponse> {
 
-        println("<<<<< PaymentController getCachedBankDeposit >>>>>>>>>")
+        println("<<<<< PaymentController : Bank 온라인 입금 정보를 리턴 >>>>>>>>>")
 
-        val REDIS_KEY = "bank-deposit-admin"
+        val REDIS_KEY = "bank-deposit"
 
         // Object <-> JSON
         val mapper = jacksonObjectMapper()
@@ -97,5 +96,7 @@ class PaymentController(private val paymentService: PaymentService) {
 
         return@transaction result
     }
+
+
 
 }
